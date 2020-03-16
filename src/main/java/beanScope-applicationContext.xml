@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:context="http://www.springframework.org/schema/context"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- STEP 1 . BEAN CONFIGURATION -->
-    
-   <bean id = "myFortune" class = "Coach.spring.HappyFortuneService"></bean>
+
+	 <bean id = "myFortune" class = "Coach.spring.HappyFortuneService"></bean>
    
-    <bean id = "BaseballCoach" class = "Coach.spring.BaseballCoach">
+    <bean id = "baseballCoach" class = "Coach.spring.BaseballCoach">
     <constructor-arg  ref = "myFortune" />
     <property name = "emailId" value = "${foo.email}"/>
     <property name = "team" value = "${foo.team}"/>
     </bean>
     
-    <bean id = "TrackCoach" class = "Coach.spring.TrackCoach" scope = "singleton"> 
+    <bean id = "trackCoach" class = "Coach.spring.TrackCoach" scope = "singleton"> 
     <property name = "fortuneService" ref = "myFortune" />
     </bean>
     
@@ -29,7 +27,9 @@
     	<property name="rootLoggerLevel" value="FINE" />
     	<property name="printedLoggerLevel" value="FINE"/>
     </bean>
-    
-    
-    
+
+
+
+
+
 </beans>
