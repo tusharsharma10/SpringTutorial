@@ -13,13 +13,17 @@
    
     <bean id = "BaseballCoach" class = "Coach.spring.BaseballCoach">
     <constructor-arg  ref = "myFortune" />
+    <property name = "emailId" value = "${foo.email}"/>
+    <property name = "team" value = "${foo.team}"/>
     </bean>
     
     <bean id = "TrackCoach" class = "Coach.spring.TrackCoach">
     <property name = "fortuneService" ref = "myFortune" />
     </bean>
     
+     <!-- Loading properties file -->
      
+     <context:property-placeholder location="classpath:sport.properties"/>
      
      <bean id="myLoggerConfig" class="Coach.spring.MyLoggerConfig" init-method="initLogger">
     	<property name="rootLoggerLevel" value="FINE" />
