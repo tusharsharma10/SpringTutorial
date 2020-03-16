@@ -9,14 +9,23 @@
 
     <!-- STEP 1 . BEAN CONFIGURATION -->
     
-    <bean id = "myCoach" class = "Coach.spring.TrackCoach">
-    
-    
+   <bean id = "myFortune" class = "Coach.spring.HappyFortuneService"></bean>
+   
+    <bean id = "BaseballCoach" class = "Coach.spring.BaseballCoach">
+    <constructor-arg  ref = "myFortune" />
     </bean>
     
+    <bean id = "TrackCoach" class = "Coach.spring.TrackCoach">
+    <property name = "fortuneService" ref = "myFortune" />
+    </bean>
+    
+     
+     
      <bean id="myLoggerConfig" class="Coach.spring.MyLoggerConfig" init-method="initLogger">
     	<property name="rootLoggerLevel" value="FINE" />
     	<property name="printedLoggerLevel" value="FINE"/>
     </bean>
+    
+    
     
 </beans>
