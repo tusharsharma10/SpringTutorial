@@ -1,0 +1,288 @@
+Spring Core:
+1. Dependency Injection are of two types:
+	Constructor injection and Setter Injection
+Setter Injection example:
+ <bean id = "TrackCoach" class = "Coach.spring.TrackCoach" scope = "singleton"> 
+    <property name = "fortuneService" ref = "myFortune" />
+    </bean>
+
+Constructor Injection Ex:
+<bean id="e" class="com.javatpoint.Employee">
+<constructor-arg value="10" type="int"></constructor-arg>
+</bean> 
+
+Autowiring basics Spring:
+https://www.javatpoint.com/autowiring-in-spring
+
+IOC: Create and manage Objects
+The bean tags in applicationContext.xml allows to create beans using the spring bean factory:
+<bean id = "BaseballCoach" class = "Coach.spring.BaseballCoach">
+    <property name = "emailId" value = "${foo.email}"/>
+    <property name = "team" value = "${foo.team}"/>
+    </bean>
+    <bean id = "myFortune" class = "Coach.spring.HappyFortuneService"></bean>
+
+    ClassPathXmlApplicationContext context = 
+				new ClassPathXmlApplicationContext("applicationContext.xml");
+
+BaseballCoach coach1 = context.getBean("BaseballCoach", BaseballCoach.class);
+
+
+Dependency Injection:
+Constructor Injection  Setter Injection
+
+Dependency Interface/ Class:
+Dependency is a user defined data type i.e. a class , it should be non-primitive
+Dependency Injection is the process in which one class say B is a member of say class A
+
+class A{
+
+    B objectB;
+}
+
+and we have to initialize objectB
+now it can be done using a constructor and setter Method
+
+Trivial Approach:
+
+A(){
+
+    objectB = new B();
+}
+
+setobjectB(){
+
+    objectB = new B();
+}
+
+but this is a bad approach as we have to manage everything therefore a good approach is to delegate the
+work to spring bean factory .
+
+Dependency Injection approach:
+
+CI:
+A(B objectB){
+    this.objectB = objectB;
+}
+
+SI:
+setobjectB(B objectB){
+    this.objectB = objectB;
+}
+
+But in order to do so we have to make configuration in applicationContext file:
+
+// Dependency Helper
+<bean id = "myFortune" class = "Coach.spring.HappyFortuneService"></bean>
+
+// Dependency Injection using constructor Injection
+<bean id = "BaseballCoach" class = "Coach.spring.BaseballCoach">
+   <constructor-arg ref = "myFortune"/>
+</bean>
+    
+
+Spring DI:
+Using annotations and autowiring:
+
+ToDO:
+Inject FortuneService into a BaseballCoach
+Spring will scan @Component
+Spring Checks who implements FortuneService
+and then injects the Dependency
+
+Constructor injection using components scan and autowire :
+
+no need to write <bean> tags
+ <context:component-scan base-package="annotation.spring" /> in applicationContext file
+ write @Component over the classes
+ write @Autowired over the constructor and spring will inject the dependency in the background.
+ 
+@Component("newCoach")
+public class TennisCoach implements Coach {
+
+	private FortuneService fortuneService;
+
+	@Autowired
+	public TennisCoach(FortuneService fortuneService) {
+
+		this.fortuneService = fortuneService;
+	}
+}
+
+FortuneService fortuneService written this in constructor but still spring finds its implementation
+and injects it.
+
+What if there are multiple implementation of FortuneService?
+
+Setter Injection:
+@Autowired
+	public void setFortuneService(FortuneService fortuneService) {
+		this.fortuneService = fortuneService;
+	}
+
+    just write @Autowired on top of setter method and leave the rest to spring 
+    no need to call the setter method.
+
+Method Injection:
+Give the @Autowired annotation on any random method and DI will happen 
+@Autowired
+	public void doSomeCrazyStuff(FortuneService fortuneService) {
+		this.fortuneService = fortuneService;
+	}
+
+Field Injection:
+Just put the @Autowired annotation on the class variable names and Reflection and spring
+will do the DI, and there are no need for setter methods
+
+@Component("newCoach")
+public class TennisCoach implements Coach {
+	@Autowired
+	private FortuneService fortuneService;
+
+	
+	public TennisCoach() {
+		super();
+	}
+	
+// no need for setter methods
+public String getDailyFortune() {
+		return fortuneService.getFortune();
+	}
+
+}
+
+Which Injection type to use?
+Choose a style and stay consistent
+
+What if there are multiple implementation of FortuneService?
+in case of Multiple implementation spring will give NoUniqueBEANexception
+in order to avoid it use @Qualifier annotation.
+@Autowired
+@Qualifier("happyFortuneService")
+private FortuneService fortuneService;
+
+default beanId:
+HappyFortuneService ->  happyFortuneService
+
+using @Qualifier with constructor:
+@Autowired
+	public TennisCoach(@Qualifier("happyFortuneService") FortuneService fortuneService) {
+
+		this.fortuneService = fortuneService;
+	}
+
+Injecting .properties file using java annotations:
+
+sport.properties
+person.email = ts@gmail.com
+person.age = 23
+
+Load the file in applicationContext
+<context:property-placeholder location="classpath:sport.properties"/>
+
+@Value("${person.email}")
+private String email;
+
+@Value("${person.age}")
+private String age;
+
+@Scope annotation
+Default scope - singleton
+
+@Component
+@Scope("prototype")
+public class TennisCoach implements Coach
+
+Bean lifecycle methods using annotations
+1.Init method:
+@Component
+public class TennisCoach implements Coach{
+
+    @PostConstruct
+    public void methodName(){}
+
+}
+
+2. Destroy Method:
+@Component
+public class TennisCoach implements Coach{
+
+    @PreDestroy
+    public void methodName(){}
+
+}
+
+Method can have any access modifier public,protected,private
+Return type: any return type, but the value cant be returned therefore void is commonly used
+No arguments- method should not have any arguments.
+
+For prototype bean spring does not cal  @PreDestroy method, because
+spring does not manage the complete lifecycle of a prototype bean.
+It just creates an object and hands it to the client.
+
+in oreder to do so
+implement DisposableBean interface and use it's destroy() method, instead of @PreDestroy annotation.
+
+Spring Container Configuration with java code.
+1. Xml configuration
+2. annotation based
+3. Java code
+
+Steps:
+1. create a java class and @Configuration
+2.Add component scannoing @ComponentScan
+3.read spring java confign class
+4. retrieve bean from spring contatiner.
+
+**************************************************************************************************************
+
+Defining beans in spring:
+1. define method to expose the bean:
+@Configuration
+public class SportConfig{
+    @Bean
+    public coach swimCoach(){
+        SwimCoach mySwimCoach = new SwimCoach();
+        return mySwimCoach;
+    }
+}
+
+Here we are not using Component SCan and define each bean individaully in config class
+the method annotated with @Bean acts as a bean id of class.
+
+*************************************************************************************************
+
+
+Loading values from properties file:
+1. Create properties file put it in classpath
+
+
+2. @Configuration
+@ComponentScan("spring.java.config")
+@PropertySource("classpath:sport.properties")
+public class SportConfig {
+
+	@Bean
+	public FortuneService happyFortuneService(){
+		return new HappyFortuneService();
+	}
+	
+	@Bean
+	public Coach swimCoach(){
+		SwimCoach mySwimCoach = new SwimCoach(happyFortuneService());
+		return mySwimCoach;
+	}
+	
+	
+	
+}
+
+3.public class SwimCoach implements Coach {
+
+	private FortuneService fortuneService;
+
+	@Value("${foo.email}")
+	private String email;
+	@Value("${foo.team}")
+	private String team;
+	
